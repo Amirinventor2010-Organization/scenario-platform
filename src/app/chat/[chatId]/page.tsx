@@ -1,23 +1,29 @@
 // ===== FILE: src/app/chat/[chatId]/page.tsx =====
+// This version uses React.use() to resolve the params promise, removing the warning.
 
 "use client";
 
-// FIX: Importing a default export does not use curly braces {}
+// FIX: Import 'use' from React to handle the params promise
+import { useEffect, useState, use } from "react";
 import ChatWindow from "@/components/chat/ChatWindow";
 import { useChatHistory } from "@/hooks/use-chat-history";
-import { useEffect, useState } from "react";
 import { Chat } from "@/lib/types";
 
-export default function ChatPage({ params }: { params: { chatId: string } }) {
+// The 'params' prop is now a Promise
+export default function ChatPage({ params }: { params: Promise<{ chatId: string }> }) {
+  
+  // FIX: Use the 'use' hook to unwrap the promise and get the actual params object
+  const { chatId } = use(params);
+
   const { getChatById, isLoading } = useChatHistory();
   const [chat, setChat] = useState<Chat | undefined>(undefined);
 
   useEffect(() => {
     if (!isLoading) {
-      const foundChat = getChatById(params.chatId);
+      const foundChat = getChatById(chatId);
       setChat(foundChat);
     }
-  }, [params.chatId, getChatById, isLoading]);
+  }, [chatId, getChatById, isLoading]);
 
   if (isLoading) {
     return (
@@ -28,9 +34,11 @@ export default function ChatPage({ params }: { params: { chatId: string } }) {
   }
 
   if (!chat) {
+    // This can happen briefly while the chat history is loading.
+    // A more robust solution might check !isLoading && !chat
     return (
         <div className="flex items-center justify-center h-full">
-            <p>چت مورد نظر یافت نشد.</p>
+            <p>چت مورد نظر یافت نشد یا در حال بارگذاری است...</p>
         </div>
     );
   }

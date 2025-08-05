@@ -1,18 +1,23 @@
 // ===== FILE: src/app/layout.tsx =====
+// This version integrates the Vazirmatn font for a professional Persian UI.
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// FIX: Import the Vazirmatn font from Google Fonts
+import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import Sidebar from "@/components/layout/Sidebar";
-// FIX: Correctly importing Toaster directly from the 'sonner' library
 import { Toaster } from "sonner"; 
 
-const inter = Inter({ subsets: ["latin"] });
+// FIX: Configure the Vazirmatn font
+const vazirmatn = Vazirmatn({ 
+  subsets: ["arabic", "latin"], // Include subsets for Persian and English characters
+  display: 'swap', // Ensures text is visible while the font loads
+});
 
 export const metadata: Metadata = {
-  title: "AI Reels Script Generator",
-  description: "Generate viral scripts for your social media videos",
+  title: "هوش مصنوعی تولید سناریو  فراز",
+  description: "با هوش مصنوعی فراز، برای ویدیوهای خود سناریو  های وایرال بسازید.",
 };
 
 export default function RootLayout({
@@ -22,14 +27,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
-      <body className={inter.className}>
+      {/* FIX: Apply the font's CSS class to the body tag */}
+      <body className={vazirmatn.className}>
         <Providers attribute="class" defaultTheme="dark" enableSystem>
           <div className="flex h-screen overflow-hidden bg-background text-foreground">
             <Sidebar />
             <main className="flex-1 overflow-y-auto">{children}</main>
           </div>
-          {/* Toaster component for notifications */}
-          <Toaster />
+          <Toaster position="top-center" richColors />
         </Providers>
       </body>
     </html>
